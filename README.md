@@ -12,10 +12,9 @@ A web application for searching movies using the [OMDb API](http://www.omdbapi.c
 
 ## Tech Stack
 
-- **Frontend**: Blazor Server (.NET 10)
-- **Backend**: ASP.NET Core (.NET 10)
+- **Framework**: ASP.NET Core (.NET 10) with Blazor Server
 - **Database**: SQLite via Entity Framework Core
-- **Logging**: Serilog (Console + File)
+- **Logging**: Serilog
 - **Testing**: xUnit + Moq
 
 ## Project Structure
@@ -64,10 +63,16 @@ dotnet user-secrets set "Omdb:ApiKey" "your_api_key_here" --project src/MovieSea
 
 4. Run the application:
 ```bash
-dotnet run --project src/MovieSearch.Web
+   dotnet run --project src/MovieSearch.Web
 ```
 
-5. Open your browser at `https://localhost:5001`
+5. Open your browser at `http://localhost:5009`
+
+> **Note on HTTPS**: If you want to use HTTPS, trust the development certificate first:
+> ```bash
+> dotnet dev-certs https --trust
+> ```
+> Then access the app at `https://localhost:7070`. HTTP works out of the box without any setup.
 
 ### Running Tests
 
@@ -88,8 +93,20 @@ The solution follows a clean layered architecture with clear separation of conce
 
 **Blazor Server over Blazor WebAssembly** — Blazor Server was chosen because the application uses a local SQLite database and an API key, both of which are server-side concerns. Blazor WebAssembly would require an additional ASP.NET Core Web API layer acting as a proxy, adding unnecessary complexity for this use case.
 
+**On the "Backend" requirement** — the assignment requires a separate frontend (Blazor) and backend (.NET). With Blazor Server, there is no separate backend in the traditional sense (e.g. a Web API with controllers). ASP.NET Core acts as the host, and all application logic runs server-side. The layered architecture (Application + Domain + Infrastructure) fulfills the separation of concerns requirement. Had Blazor WebAssembly been chosen, a separate ASP.NET Core Web API would have been required as a backend proxy.
+
 **Search history behaviour** — all unique queries are stored in history regardless of whether they returned results. The requirement states "storing the history of the last five unique search queries" without specifying successful results only. Storing only successful queries could be a UX improvement worth discussing.
 
 **Caching** — search results and movie details are cached in memory for 30 minutes using `IMemoryCache`. This reduces redundant API calls, especially when navigating history.
 
 **CancellationToken** — all async methods accept `CancellationToken` to support proper cancellation propagation throughout the application.
+
+**Logging** — Serilog is configured to write to both console and rolling daily log files in `src/MovieSearch.Web/logs/`. Log files are excluded from the repository via `.gitignore`.
+
+## Tests
+
+The test project covers:
+
+- **`MovieSearchService`** — search and history-saving business logic (empty queries, duplicates, full history eviction, query trimming).
+- **`SearchHistoryRepository`** — database operations against an in-memory EF Core provider (CRUD, case-insensitive lookups, ordering).
+- **`OmdbApiClient`** — HTTP client behaviour with mocked `HttpMessageHandler` (successful responses, no results, server errors).
