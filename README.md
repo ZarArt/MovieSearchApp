@@ -46,22 +46,28 @@ git clone https://github.com/your-username/MovieSearch.git
 cd MovieSearch
 ```
 
-2. Add your OMDb API key to `src/MovieSearch.Web/appsettings.json`:
+2. Get a free OMDb API key at [omdbapi.com](http://www.omdbapi.com/apikey.aspx).
+
+3. Add your API key using .NET user secrets (recommended for local development):
+```bash
+dotnet user-secrets set "Omdb:ApiKey" "your_api_key_here" --project src/MovieSearch.Web
+```
+
+   Alternatively, you can edit `src/MovieSearch.Web/appsettings.json` directly:
 ```json
 {
   "Omdb": {
-    "ApiKey": "your_api_key_here",
-    "BaseUrl": "https://www.omdbapi.com/"
+    "ApiKey": "your_api_key_here"
   }
 }
 ```
 
-3. Run the application:
+4. Run the application:
 ```bash
 dotnet run --project src/MovieSearch.Web
 ```
 
-4. Open your browser at `https://localhost:5001`
+5. Open your browser at `https://localhost:5001`
 
 ### Running Tests
 
