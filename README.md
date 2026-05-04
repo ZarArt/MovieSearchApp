@@ -43,7 +43,7 @@ MovieSearch/
 1. Clone the repository:
 ```bash
 git clone https://github.com/ZarArt/MovieSearchApp.git
-cd MovieSearch
+cd MovieSearchApp
 ```
 
 2. Get a free OMDb API key at [omdbapi.com](http://www.omdbapi.com/apikey.aspx).
