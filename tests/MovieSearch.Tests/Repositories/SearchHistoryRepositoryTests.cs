@@ -6,6 +6,7 @@ namespace MovieSearch.Tests.Repositories;
 
 public class SearchHistoryRepositoryTests
 {
+    private CancellationToken Ct => TestContext.Current.CancellationToken;
     private AppDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -25,9 +26,8 @@ public class SearchHistoryRepositoryTests
         {
             Query = "inception",
             SearchedAt = DateTime.UtcNow
-        });
-
-        Assert.Equal(1, await context.SearchHistory.CountAsync());
+        }, Ct);
+        Assert.Equal(1, await context.SearchHistory.CountAsync(Ct));
     }
 
     [Fact]
@@ -36,10 +36,10 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "old", SearchedAt = DateTime.UtcNow.AddDays(-2) });
-        await repository.AddAsync(new SearchHistoryEntry { Query = "new", SearchedAt = DateTime.UtcNow });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "old", SearchedAt = DateTime.UtcNow.AddDays(-2) }, Ct);
+        await repository.AddAsync(new SearchHistoryEntry { Query = "new", SearchedAt = DateTime.UtcNow }, Ct);
 
-        var result = (await repository.GetAllAsync()).ToList();
+        var result = (await repository.GetAllAsync(Ct)).ToList();
 
         Assert.Equal("new", result.First().Query);
         Assert.Equal("old", result.Last().Query);
@@ -51,12 +51,12 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow });
-        var entry = await context.SearchHistory.FirstAsync();
+        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow }, Ct);
+        var entry = await context.SearchHistory.FirstAsync(Ct);
 
-        await repository.DeleteAsync(entry.Id);
+        await repository.DeleteAsync(entry.Id, Ct);
 
-        Assert.Equal(0, await context.SearchHistory.CountAsync());
+        Assert.Equal(0, await context.SearchHistory.CountAsync(Ct));
     }
 
     [Fact]
@@ -65,10 +65,10 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow });
-        await repository.AddAsync(new SearchHistoryEntry { Query = "hobbit", SearchedAt = DateTime.UtcNow });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow }, Ct);
+        await repository.AddAsync(new SearchHistoryEntry { Query = "hobbit", SearchedAt = DateTime.UtcNow }, Ct);
 
-        var count = await repository.CountAsync();
+        var count = await repository.CountAsync(Ct);
 
         Assert.Equal(2, count);
     }
@@ -79,9 +79,9 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = DateTime.UtcNow }, Ct);
 
-        var exists = await repository.ExistsAsync("batman");
+        var exists = await repository.ExistsAsync("batman", Ct);
 
         Assert.True(exists);
     }
@@ -92,9 +92,9 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "Batman", SearchedAt = DateTime.UtcNow });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "Batman", SearchedAt = DateTime.UtcNow }, Ct);
 
-        var exists = await repository.ExistsAsync("batman");
+        var exists = await repository.ExistsAsync("batman", Ct);
 
         Assert.True(exists);
     }
@@ -105,9 +105,9 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "inception", SearchedAt = DateTime.UtcNow });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "inception", SearchedAt = DateTime.UtcNow }, Ct);
 
-        var result = await repository.GetByQueryAsync("inception");
+        var result = await repository.GetByQueryAsync("inception", Ct);
 
         Assert.NotNull(result);
         Assert.Equal("inception", result.Query);
@@ -119,7 +119,7 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        var result = await repository.GetByQueryAsync("nonexistent");
+        var result = await repository.GetByQueryAsync("nonexistent", Ct);
 
         Assert.Null(result);
     }
@@ -130,11 +130,11 @@ public class SearchHistoryRepositoryTests
         await using var context = CreateDbContext();
         var repository = new SearchHistoryRepository(context);
 
-        await repository.AddAsync(new SearchHistoryEntry { Query = "newest", SearchedAt = DateTime.UtcNow });
-        await repository.AddAsync(new SearchHistoryEntry { Query = "oldest", SearchedAt = DateTime.UtcNow.AddDays(-5) });
-        await repository.AddAsync(new SearchHistoryEntry { Query = "middle", SearchedAt = DateTime.UtcNow.AddDays(-2) });
+        await repository.AddAsync(new SearchHistoryEntry { Query = "newest", SearchedAt = DateTime.UtcNow }, Ct);
+        await repository.AddAsync(new SearchHistoryEntry { Query = "oldest", SearchedAt = DateTime.UtcNow.AddDays(-5) }, Ct);
+        await repository.AddAsync(new SearchHistoryEntry { Query = "middle", SearchedAt = DateTime.UtcNow.AddDays(-2) }, Ct);
 
-        var result = await repository.GetOldestAsync();
+        var result = await repository.GetOldestAsync(Ct);
 
         Assert.NotNull(result);
         Assert.Equal("oldest", result.Query);
@@ -147,12 +147,12 @@ public class SearchHistoryRepositoryTests
         var repository = new SearchHistoryRepository(context);
 
         var oldDate = DateTime.UtcNow.AddDays(-1);
-        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = oldDate });
-        var entry = await context.SearchHistory.FirstAsync();
+        await repository.AddAsync(new SearchHistoryEntry { Query = "batman", SearchedAt = oldDate }, Ct);
+        var entry = await context.SearchHistory.FirstAsync(Ct);
 
-        await repository.UpdateDateAsync(entry.Id);
+        await repository.UpdateDateAsync(entry.Id, Ct);
 
-        var updated = await context.SearchHistory.FindAsync(entry.Id);
+        var updated = await context.SearchHistory.FindAsync([entry.Id], Ct);
         Assert.True(updated!.SearchedAt > oldDate);
     }
 }

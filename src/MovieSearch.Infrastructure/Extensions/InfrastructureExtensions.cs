@@ -27,6 +27,8 @@ public static class InfrastructureExtensions
 
         services.AddScoped<MovieSearchService>();
 
+        services.AddMemoryCache();
+
         return services;
     }
 }
