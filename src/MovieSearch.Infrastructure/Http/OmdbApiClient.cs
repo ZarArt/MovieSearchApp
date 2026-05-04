@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MovieSearch.Application.Interfaces;
 using MovieSearch.Domain.Entities;
+using MovieSearch.Infrastructure.Responses;
+using MovieSearch.Infrastructure.DTO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace MovieSearch.Infrastructure.Http;
 
@@ -27,7 +28,10 @@ public class OmdbApiClient : IOmdbApiClient
         var json = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<OmdbSearchResponse>(json);
 
-        return result?.Search ?? Enumerable.Empty<Movie>();
+        if (result?.Response != "True")
+            return Enumerable.Empty<Movie>();
+
+        return result.Search ?? Enumerable.Empty<Movie>();
     }
 
     public async Task<Movie?> GetMovieByIdAsync(string imdbId)
@@ -37,13 +41,18 @@ public class OmdbApiClient : IOmdbApiClient
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Movie>(json);
+        var result = JsonSerializer.Deserialize<OmdbMovieResponse>(json);
+
+        if (result?.Response != "True")
+            return null;
+
+        return result.ToMovie();
     }
 }
 
 // OMDb повертає список фільмів у полі "Search"
-internal class OmdbSearchResponse
-{
-    [JsonPropertyName("Search")]
-    public List<Movie>? Search { get; set; }
-}
+//internal class OmdbSearchResponse
+//{
+//    [JsonPropertyName("Search")]
+//    public List<Movie>? Search { get; set; }
+//}

@@ -21,7 +21,8 @@ public static class InfrastructureExtensions
 
         services.AddHttpClient<IOmdbApiClient, OmdbApiClient>(client =>
         {
-            client.BaseAddress = new Uri("https://www.omdbapi.com/");
+            client.BaseAddress = new Uri(configuration["Omdb:BaseUrl"]
+                ?? throw new InvalidOperationException("OMDb BaseUrl is not configured"));
         });
 
         services.AddScoped<MovieSearchService>();

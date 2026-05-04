@@ -1,7 +1,7 @@
 ﻿using MovieSearch.Domain.Entities;
 using System.Text.Json.Serialization;
 
-namespace MovieSearch.Infrastructure.Models;
+namespace MovieSearch.Infrastructure.Responses;
 
 internal class OmdbSearchResponse
 {
