@@ -13,6 +13,10 @@ public class MovieSearchService(IOmdbApiClient apiClient, ISearchHistoryReposito
         if (string.IsNullOrWhiteSpace(query))
             return Enumerable.Empty<Movie>();
 
+        // Note: we store all unique queries regardless of search results,
+        // as the requirement states "storing the history of the last five unique search queries"
+        // without specifying successful results only.
+        // Storing only successful queries could be a UX improvement worth discussing.
         await SaveToHistoryAsync(query.Trim());
 
         return await _apiClient.SearchMoviesAsync(query.Trim());
@@ -25,8 +29,13 @@ public class MovieSearchService(IOmdbApiClient apiClient, ISearchHistoryReposito
 
     private async Task SaveToHistoryAsync(string query)
     {
-        if (await _historyRepository.ExistsAsync(query))
+        var duplicate = await _historyRepository.GetByQueryAsync(query);
+
+        if (duplicate is not null)
+        {
+            await _historyRepository.UpdateDateAsync(duplicate.Id);
             return;
+        }
 
         if (await _historyRepository.CountAsync() >= 5)
         {

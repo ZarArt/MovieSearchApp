@@ -47,4 +47,17 @@ public class SearchHistoryRepository : ISearchHistoryRepository
         await _context.SearchHistory
             .OrderBy(e => e.SearchedAt)
             .FirstOrDefaultAsync();
+
+    public async Task UpdateDateAsync(int id)
+    {
+        var entry = await _context.SearchHistory.FindAsync(id);
+        if (entry is not null)
+        {
+            entry.SearchedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<SearchHistoryEntry?> GetByQueryAsync(string query) =>
+        await _context.SearchHistory.FirstOrDefaultAsync(e => e.Query.ToLower() == query.ToLower());
 }

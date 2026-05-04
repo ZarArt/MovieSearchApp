@@ -10,5 +10,7 @@ namespace MovieSearch.Application.Interfaces
         Task<int> CountAsync();
         Task<bool> ExistsAsync(string query);
         Task<SearchHistoryEntry?> GetOldestAsync();
+        Task UpdateDateAsync(int id);
+        Task<SearchHistoryEntry?> GetByQueryAsync(string query);
     }
 }

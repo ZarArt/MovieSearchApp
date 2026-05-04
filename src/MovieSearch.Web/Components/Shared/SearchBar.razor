@@ -1,0 +1,31 @@
+﻿@inject IJSRuntime JS
+
+<div class="search-bar">
+    <input @bind="_query"
+           @bind:event="oninput"
+           @onkeydown="HandleKeyDown"
+           placeholder="Search for a movie..."
+           disabled="@IsLoading" />
+    <button @onclick="Submit" disabled="@(IsLoading || string.IsNullOrWhiteSpace(_query))">
+        Search
+    </button>
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnSearch { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    private string _query = string.Empty;
+
+    private async Task Submit()
+    {
+        if (!string.IsNullOrWhiteSpace(_query))
+            await OnSearch.InvokeAsync(_query.Trim());
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await Submit();
+    }
+}

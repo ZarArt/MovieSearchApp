@@ -1,0 +1,56 @@
+﻿<div class="movie-detail">
+    <button style="margin-bottom: 1rem;" @onclick="OnClose">← Back</button>
+
+    <div class="movie-detail-content">
+        <div class="movie-detail-poster">
+            @if (!string.IsNullOrEmpty(Movie.Poster) && Movie.Poster != "N/A")
+            {
+                <img src="@Movie.Poster"
+                     alt="@Movie.Title"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div class="no-poster" style="display:none;">No poster</div>
+            }
+            else
+            {
+                <div class="no-poster">No poster</div>
+            }
+        </div>
+
+        <div class="movie-detail-info">
+            <h2>@Movie.Title <span class="movie-year">(@Movie.Year)</span></h2>
+
+            <div class="movie-rating">
+                ⭐ @Movie.ImdbRating <span>/ 10</span>
+            </div>
+
+            <div class="movie-meta">
+                <div class="meta-row">
+                    <span class="meta-label">Genre</span>
+                    <span>@Movie.Genre</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Director</span>
+                    <span>@Movie.Director</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Actors</span>
+                    <span>@Movie.Actors</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Runtime</span>
+                    <span>@Movie.Runtime</span>
+                </div>
+            </div>
+
+            <div class="movie-plot">
+                <p class="meta-label">Plot</p>
+                <p>@Movie.Plot</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Movie Movie { get; set; } = null!;
+    [Parameter] public EventCallback OnClose { get; set; }
+}

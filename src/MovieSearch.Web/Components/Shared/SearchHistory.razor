@@ -1,0 +1,38 @@
+﻿@inject ISearchHistoryRepository HistoryRepository
+
+<div class="search-history">
+    @if (_entries.Any())
+    {
+        <h4>Recent searches</h4>
+        <ul class="history-list">
+            @foreach (var entry in _entries)
+            {
+                <li @onclick="() => OnQuerySelected.InvokeAsync(entry.Query)">
+                    @entry.Query
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnQuerySelected { get; set; }
+
+    private IEnumerable<SearchHistoryEntry> _entries = Enumerable.Empty<SearchHistoryEntry>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHistory();
+    }
+
+    private async Task LoadHistory()
+    {
+        _entries = await HistoryRepository.GetAllAsync();
+    }
+
+    public async Task RefreshAsync()
+    {
+        await LoadHistory();
+        StateHasChanged();
+    }
+}

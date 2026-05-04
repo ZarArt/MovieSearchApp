@@ -1,7 +1,71 @@
 ﻿@page "/"
+@using MovieSearch.Web.Components.Shared
+@inject MovieSearchService SearchService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Movie Search</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container">
+    <h1>Movie Search</h1>
 
-Welcome to your new app.
+    <div class="search-wrapper">
+        <SearchBar OnSearch="HandleSearch" IsLoading="@_isLoading" />
+        <SearchHistory @ref="_searchHistory" OnQuerySelected="HandleSearch" />
+    </div>
+
+    @if (_selectedMovie is not null)
+    {
+        <MovieDetail Movie="@_selectedMovie" OnClose="() => _selectedMovie = null" />
+    }
+    else if (_isLoading)
+    {
+        <p>Searching...</p>
+    }
+    else if (_error is not null)
+    {
+        <p class="text-danger">@_error</p>
+    }
+    else if (_results is not null)
+    {
+        <SearchResults Movies="@_results" OnMovieSelected="ShowDetails" />
+    }
+</div>
+
+@code {
+    private IEnumerable<Movie>? _results;
+    private Movie? _selectedMovie;
+    private bool _isLoading;
+    private string? _error;
+    private SearchHistory? _searchHistory;
+
+    private async Task HandleSearch(string query)
+    {
+        _isLoading = true;
+        _error = null;
+        _selectedMovie = null;
+        _results = null;
+
+        try
+        {
+            _results = await SearchService.SearchAsync(query);
+
+            if (!_results.Any())
+                _error = "No movies found.";
+        }
+        catch (Exception ex)
+        {
+            _error = $"Something went wrong: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+
+            if (_searchHistory is not null)
+                await _searchHistory.RefreshAsync();
+        }
+    }
+
+    private async Task ShowDetails(string imdbId)
+    {
+        _selectedMovie = await SearchService.GetDetailsAsync(imdbId);
+    }
+}
