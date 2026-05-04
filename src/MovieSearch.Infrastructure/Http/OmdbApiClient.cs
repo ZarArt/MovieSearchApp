@@ -30,7 +30,7 @@ public class OmdbApiClient : IOmdbApiClient
 
     public async Task<IEnumerable<Movie>> SearchMoviesAsync(string query, CancellationToken ct = default)
     {
-        var cacheKey = $"search:{query.ToLower()}";
+        var cacheKey = $"search:{query.Trim().ToLower()}";
 
         if (_cache.TryGetValue(cacheKey, out IEnumerable<Movie>? cached))
         {
