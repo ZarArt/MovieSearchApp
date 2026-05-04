@@ -1,7 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/MovieSearch.Application/MovieSearch.Application.csproj" Id="aab8400c-df57-4df1-b483-8f75a2086c48" />
+    <Project Path="src/MovieSearch.Domain/MovieSearch.Domain.csproj" />
+    <Project Path="src/MovieSearch.Infrastructure/MovieSearch.Infrastructure.csproj" Id="04ae2403-2469-4ff3-bc0b-c210e5e20df0" />
     <Project Path="src/MovieSearch.Web/MovieSearch.Web.csproj" Id="aabc5f61-64d2-4dc6-a9ba-ed4c4b3d4b76" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/MovieSearch.Tests/MovieSearch.Tests.csproj" Id="86069a42-a306-46aa-a56e-28a4c8c3d082" />
+  </Folder>
 </Solution>

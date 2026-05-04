@@ -1,15 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MovieSearch.Application\MovieSearch.Application.csproj" />
-    <ProjectReference Include="..\MovieSearch.Infrastructure\MovieSearch.Infrastructure.csproj" />
+    <ProjectReference Include="..\MovieSearch.Domain\MovieSearch.Domain.csproj" />
   </ItemGroup>
 
 </Project>
