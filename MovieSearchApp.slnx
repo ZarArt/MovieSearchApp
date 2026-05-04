@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MovieSearch.Application/MovieSearch.Application.csproj" Id="aab8400c-df57-4df1-b483-8f75a2086c48" />
+    <Project Path="src/MovieSearch.Web/MovieSearch.Web.csproj" Id="aabc5f61-64d2-4dc6-a9ba-ed4c4b3d4b76" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
