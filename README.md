@@ -1,4 +1,4 @@
-# MovieSearch
+# MovieSearchApp
 
 A web application for searching movies using the [OMDb API](http://www.omdbapi.com), built with .NET 10 and Blazor Server.
 
